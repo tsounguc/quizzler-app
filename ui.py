@@ -37,15 +37,32 @@ class QuizInterface:
         self.window.mainloop()
 
     def answer_false(self):
-        self.quiz.check_answer("False")
-        self.score_label.config(text=f"Score: {self.quiz.score}")
-        self.get_next_question()
+        self.give_feedback(self.quiz.check_answer("False"))
 
     def answer_true(self):
-        self.quiz.check_answer("True")
-        self.score_label.config(text=f"Score: {self.quiz.score}")
-        self.get_next_question()
+        self.give_feedback(self.quiz.check_answer("True"))
+
 
     def get_next_question(self):
-        question_str = self.quiz.next_question()
-        self.canvas.itemconfig(self.question_text, text=question_str)
+        self.canvas.config(bg="white")
+        if self.quiz.still_has_questions():
+            self.score_label.config(text=f"Score: {self.quiz.score}")
+            question_str = self.quiz.next_question()
+            self.canvas.itemconfig(self.question_text, text=question_str, fill=THEME_COLOR)
+        else:
+            self.true_button.config(state="disabled")
+            self.false_button.config(state="disabled")
+            self.canvas.itemconfig(self.question_text, text="You've reached the end of the quiz.", fill=THEME_COLOR)
+
+    def give_feedback(self, is_right):
+        if is_right:
+            self.canvas.config(bg="green")
+        else:
+            self.canvas.config(bg="red")
+        self.canvas.itemconfig(self.question_text, fill="white")
+        self.window.after(1000, self.get_next_question)
+
+    def change_background(self):
+        self.canvas.config(bg="Green")
+
+
